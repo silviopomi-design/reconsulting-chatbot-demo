@@ -2,22 +2,20 @@ import streamlit as st
 import openai
 import os
 
-# Recupera la chiave API da Streamlit Secrets
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# Inizializza il client OpenAI (nuova sintassi!)
+client = openai.OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Carica la base di conoscenza
 with open("reconsulting_base.txt", "r", encoding="utf-8") as f:
     knowledge_base = f.read()
 
-# Interfaccia grafica
+# UI Streamlit
 st.set_page_config(page_title="Reconsulting Chatbot", layout="centered")
 st.title("💬 Chatbot Reconsulting")
 st.write("Fai una domanda sui servizi Reconsulting. Il chatbot risponde basandosi su conoscenze pre-caricate.")
 
-# Input utente
 user_input = st.text_input("Scrivi la tua domanda:", "")
 
-# Logica di risposta
 if user_input:
     with st.spinner("Sto pensando..."):
         prompt = f"""Sei un assistente AI professionale. Rispondi solo in base al seguente testo. 
@@ -32,7 +30,7 @@ DOMANDA:
 RISPOSTA:"""
 
         try:
-            response = openai.ChatCompletion.create(
+            response = client.chat.completions.create(
                 model="gpt-4",
                 messages=[{"role": "user", "content": prompt}],
                 temperature=0.4,
